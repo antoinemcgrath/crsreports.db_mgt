@@ -1,0 +1,31 @@
+#Checkup Requirments
+#/mnt/CRS/reports/ holds the CRS reports in original PDF format
+#Reports have kept their original names
+#Connection to mongoDB
+#downloadmissingreports.py
+
+#This guide provides a method of identifying modified files and re-downloading originals
+
+
+##Generate new Sha-256 Hash to compare with original Sha-256 Hash
+#Create new Sha-256 Hash list with subfolders included
+find /mnt/CRS/reports/ -type f | xargs sha256sum > /mnt/CRS/NewSha-256.txt
+
+##Keep only lines in which Sha-256 Hash is the same for in original and new
+#Find files that have the same NewSha-256 Hash as original Sha-256 Hash
+#grep lines with regex (copy lines which have matching 1st 64 characters and last 64 characters)
+grep -wE '^(.{64}).*\1$' /mnt/CRS/NewSha-256.txt > /mnt/CRS/SameSha256.txt
+#Prep list for file transfer
+#Copy only the path and filename to the reportMoveList.txt
+grep -woE '/mnt/CR*.....' /mnt/CRS/SameSha256.txt > reportMoveList.txt
+#Move every file one reportMoveList.txt from reports to directory reportss
+cat ~/Desktop/Dropbox/reportMoveList.txt | xargs mv -t /mnt/CRS/reportss
+#Move remaining files reports from reports to directory to backup (for these files NewSha256 ==! Original Sha256)
+mv /mnt/CRS/reports mnt/CRS/FalseShaNameReports
+#Rename directory reportss to reports
+mv /mnt/CRS/reportss /mnt/CRS/reports
+##Now the only files in /mnt/CRS/reports/ are ones which have the same NewSha256 = Original Sha256Download
+
+##Query the database to redownload any missing report originals.
+#Run missing report download script
+python downloadmissingreports.py
