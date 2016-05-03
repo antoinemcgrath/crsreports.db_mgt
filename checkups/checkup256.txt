@@ -1,4 +1,4 @@
-#Checkup Requirments
+#Checkup Requirements
 #/mnt/CRS/reports/ holds the CRS reports in original PDF format
 #Reports have kept their original names
 #Connection to mongoDB
