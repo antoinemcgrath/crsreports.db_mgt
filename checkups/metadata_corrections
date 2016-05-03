@@ -1,0 +1,27 @@
+#metadata_corrections
+#Data Prep
+#If the metadata extraction errors take a look at common mistakes and automate corrections.
+
+#Example 1: Correction for extra-character-removal
+#Example 2: Correction for all-caps
+
+
+#Example 1: Within the title contains "http://www.sourcesite.com  " for several documents
+#Run:
+db.reports.find({ "parsed_metadata.title": /.*http:\/\/www.sourcesite.com  */gi }).forEach(function(doc) {
+    doc.parsed_metadata.title = doc.parsed_metadata.title.replace(/http:\/\/www.sourcesite.com  /gi,"");
+    db.reports.update({ "_id": doc._id },{ "$set": { "parsed_metadata.title": doc.parsed_metadata.title , "parsed_metadata.version": 99 } });
+});
+#Explanation Line 1 finds all title occurrences of "http://www.sourcesite.com  " (prefacing every special character is"\", and anything can precede ".*" or follow it ".*" and it can be in upper or lowercase (gi)
+#Explanation Line 2 (/http:\/\/www.sourcesite.com  /gi,"") means to replace every occurrence (but not the characters before & after) of "http:\/\/www.sourcesite.com  " in upper or lowercase to "" (nothing)
+
+
+
+#Example 2: The title is all in uppercase
+#Run:
+db.reports.find({ "parsed_metadata.title": /.*WORLD INTELLECTUAL PROPERTY ORGANIZATION COPYRIGHT TREATY: AN OVERVIEW*/g }).forEach(function(doc) {
+    doc.parsed_metadata.title = doc.parsed_metadata.title.replace(/WORLD INTELLECTUAL PROPERTY ORGANIZATION COPYRIGHT TREATY: AN OVERVIEW/gi,"World Intellectual Property Organization Copyright Treaty: An Overview");
+    db.reports.update({ "_id": doc._id },{ "$set": { "parsed_metadata.title": doc.parsed_metadata.title , "parsed_metadata.version": 99 } });
+});
+#Explanation Line 1 finds all title occurrences of /.*WORLD INTELLECTUAL PROPERTY ORGANIZATION COPYRIGHT TREATY: AN OVERVIEW*/g (case specific (g))
+#Explanation Line 2 replace only the text (/WORLD INTELLECTUAL PROPERTY ORGANIZATION COPYRIGHT TREATY: AN OVERVIEW/gi,"World Intellectual Property Organization Copyright Treaty: An Overview") (replace text insensitive with specified text)
