@@ -15,7 +15,6 @@ The CRS project is 3 sections:
 (git@github.com:antoinemcgrath/crsreports.db_mgt.git)
 
 3. Analysis
-(Expected N. Hemisphere's Fall 2016)
 
 
 This git relates to Section 2
